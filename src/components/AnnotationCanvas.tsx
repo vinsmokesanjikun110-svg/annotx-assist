@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Canvas as FabricCanvas, Circle, Rect, PencilBrush, FabricImage } from "fabric";
 import { toast } from "sonner";
+import { useCallback } from "react";
 
 interface AnnotationCanvasProps {
   imagePath: string;
@@ -20,6 +21,7 @@ export const AnnotationCanvas = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<FabricCanvas | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const aiProcessedRef = useRef(false);
 
   // Initialize canvas
   useEffect(() => {
@@ -118,9 +120,18 @@ export const AnnotationCanvas = ({
     }
   }, [selectedTool, brushSize]);
 
-  // AI assist - generate dummy suggestions
+  // AI assist - generate dummy suggestions (only once when activated)
   useEffect(() => {
-    if (!fabricCanvasRef.current || !aiAssistActive) return;
+    if (!fabricCanvasRef.current || !aiAssistActive || !isReady) {
+      if (!aiAssistActive) {
+        aiProcessedRef.current = false;
+      }
+      return;
+    }
+
+    // Prevent running multiple times
+    if (aiProcessedRef.current) return;
+    aiProcessedRef.current = true;
 
     const canvas = fabricCanvasRef.current;
     
@@ -135,7 +146,7 @@ export const AnnotationCanvas = ({
     // Generate 2-3 random AI suggestion regions
     const numSuggestions = Math.floor(Math.random() * 2) + 2;
     
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       for (let i = 0; i < numSuggestions; i++) {
         const x = Math.random() * 600 + 100;
         const y = Math.random() * 600 + 100;
@@ -174,9 +185,10 @@ export const AnnotationCanvas = ({
       canvas.renderAll();
       toast.success("AI detected " + numSuggestions + " potential regions");
       onAiSuggestion?.();
-    }, 1500); // Simulate AI processing delay
+    }, 1500);
 
-  }, [aiAssistActive, onAiSuggestion]);
+    return () => clearTimeout(timeout);
+  }, [aiAssistActive, isReady]);
 
   return (
     <div className="w-full h-full flex items-center justify-center">
