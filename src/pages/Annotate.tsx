@@ -4,9 +4,11 @@ import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { 
   Activity, ArrowLeft, Brush, Circle, Download, Eraser, 
-  Hand, Maximize, RotateCw, Save, Sparkles, Square, ZoomIn, ZoomOut, ChevronDown 
+  Hand, Maximize, RotateCw, Save, Sparkles, Square, ZoomIn, ZoomOut, ChevronDown, Trash2 
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AnnotationCanvas } from "@/components/AnnotationCanvas";
+import { toast } from "sonner";
 
 const sampleScans = [
   { id: 1, name: "Chest X-Ray", type: "X-Ray", path: "/sample-scans/chest-xray-generated.jpg" },
@@ -22,6 +24,16 @@ const Annotate = () => {
   const [aiAssistActive, setAiAssistActive] = useState(false);
   const [currentScan, setCurrentScan] = useState(0);
   const [showScanSelector, setShowScanSelector] = useState(false);
+  const [aiConfidence, setAiConfidence] = useState(0);
+
+  const handleSaveAnnotation = () => {
+    toast.success("Annotation saved successfully!");
+  };
+
+  const handleAiSuggestion = () => {
+    const confidence = Math.floor(Math.random() * 20) + 75; // 75-95%
+    setAiConfidence(confidence);
+  };
 
   const tools = [
     { id: "hand", icon: Hand, label: "Pan" },
@@ -80,7 +92,7 @@ const Annotate = () => {
           <Button variant="ghost" size="sm">
             <Download className="w-4 h-4" />
           </Button>
-          <Button variant="medical" size="sm">
+          <Button variant="medical" size="sm" onClick={handleSaveAnnotation}>
             <Save className="w-4 h-4" />
             Save Annotation
           </Button>
@@ -116,20 +128,31 @@ const Annotate = () => {
           >
             <Sparkles className="w-5 h-5" />
           </button>
+          <button
+            onClick={() => {
+              toast.success("Canvas cleared");
+              window.location.reload();
+            }}
+            className="w-10 h-10 rounded-lg flex items-center justify-center transition-all hover:bg-destructive/20 text-muted-foreground hover:text-destructive"
+            title="Clear All"
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
         </aside>
 
         {/* Center Canvas */}
         <main className="flex-1 flex flex-col">
           <div className="flex-1 bg-background/50 relative">
-            {/* Canvas with Sample Scan */}
+            {/* Annotation Canvas */}
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="relative w-full max-w-3xl aspect-square mx-4">
                 <Card className="w-full h-full border border-border/50 flex items-center justify-center bg-black/90 overflow-hidden">
-                  <img 
-                    src={sampleScans[currentScan].path} 
-                    alt={sampleScans[currentScan].name}
-                    className="w-full h-full object-contain"
-                    style={{ imageRendering: 'crisp-edges' }}
+                  <AnnotationCanvas 
+                    imagePath={sampleScans[currentScan].path}
+                    selectedTool={selectedTool}
+                    brushSize={brushSize[0]}
+                    aiAssistActive={aiAssistActive}
+                    onAiSuggestion={handleAiSuggestion}
                   />
                 </Card>
                 {aiAssistActive && (
@@ -215,15 +238,20 @@ const Annotate = () => {
                   />
                 </div>
 
-                <div>
-                  <label className="text-sm text-muted-foreground mb-2 block">AI Confidence</label>
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                      <div className="h-full w-[87%] bg-gradient-to-r from-success to-primary" />
+                {aiConfidence > 0 && (
+                  <div>
+                    <label className="text-sm text-muted-foreground mb-2 block">AI Confidence</label>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-success to-primary transition-all duration-500" 
+                          style={{ width: `${aiConfidence}%` }}
+                        />
+                      </div>
+                      <span className="text-sm font-medium text-success">{aiConfidence}%</span>
                     </div>
-                    <span className="text-sm font-medium text-success">87%</span>
                   </div>
-                </div>
+                )}
               </Card>
             </div>
 
