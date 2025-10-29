@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Slider } from "@/components/ui/slider";
 import { 
   Activity, ArrowLeft, Brush, Circle, Download, Eraser, 
-  Hand, Maximize, RotateCw, Save, Sparkles, Square, ZoomIn, ZoomOut, ChevronDown, Trash2 
+  Hand, Maximize, RotateCw, Save, Sparkles, Square, ZoomIn, ZoomOut, ChevronDown, Trash2, ChevronLeft, ChevronRight 
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { AnnotationCanvas } from "@/components/AnnotationCanvas";
@@ -33,6 +33,28 @@ const Annotate = () => {
   const handleAiSuggestion = () => {
     const confidence = Math.floor(Math.random() * 20) + 75; // 75-95%
     setAiConfidence(confidence);
+  };
+
+  const handleNextImage = () => {
+    if (currentScan < sampleScans.length - 1) {
+      setCurrentScan(currentScan + 1);
+      setAiAssistActive(false);
+      setAiConfidence(0);
+      toast.success("Moved to next scan");
+    } else {
+      toast.info("This is the last scan");
+    }
+  };
+
+  const handlePreviousImage = () => {
+    if (currentScan > 0) {
+      setCurrentScan(currentScan - 1);
+      setAiAssistActive(false);
+      setAiConfidence(0);
+      toast.success("Moved to previous scan");
+    } else {
+      toast.info("This is the first scan");
+    }
   };
 
   const tools = [
@@ -89,12 +111,30 @@ const Annotate = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="sm"
+            onClick={handlePreviousImage}
+            disabled={currentScan === 0}
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Previous
+          </Button>
           <Button variant="ghost" size="sm">
             <Download className="w-4 h-4" />
           </Button>
           <Button variant="medical" size="sm" onClick={handleSaveAnnotation}>
             <Save className="w-4 h-4" />
-            Save Annotation
+            Save
+          </Button>
+          <Button 
+            variant="medical" 
+            size="sm"
+            onClick={handleNextImage}
+            disabled={currentScan === sampleScans.length - 1}
+          >
+            Next
+            <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
       </header>
