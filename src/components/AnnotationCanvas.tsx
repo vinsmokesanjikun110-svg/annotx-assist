@@ -148,8 +148,8 @@ export const AnnotationCanvas = ({
     
     const timeout = setTimeout(() => {
       for (let i = 0; i < numSuggestions; i++) {
-        const x = Math.random() * 600 + 100;
-        const y = Math.random() * 600 + 100;
+        const x = Math.random() * 200 + 300;
+        const y = Math.random() * 200 + 300;
         const size = Math.random() * 60 + 40;
         const isCircle = Math.random() > 0.5;
 
