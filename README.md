@@ -255,32 +255,6 @@ annotx-assist/
 
 ---
 
-## 🏆 Hackathon Context
-
-### Theme Alignment
-**People and Technology Working Together**
-
-AnnotateRx embodies this theme by:
-- Putting radiologists in control while AI handles repetitive tasks
-- Providing transparency with confidence scores and explainability
-- Creating audit trails that show human-AI collaboration
-- Enabling experts to guide, check, and improve AI models
-
-### Judging Criteria
-
-**Impact** — Long-term potential for success, growth, and positive effect on healthcare  
-**Technical Implementation** — Depth of engineering, correct use of AI/ML, and working prototype quality  
-**Creativity** — Originality and uniqueness of concept or approach  
-**Pitch Quality** — Clarity and effectiveness of the final presentation and demo
-
----
-
-## 👥 Team
-
-Built for the **Loop x IIT-B Hackathon** by a team passionate about making medical AI more accessible and efficient.
-
----
-
 ## 📝 License
 
 This project is part of a hackathon submission. All rights reserved.
